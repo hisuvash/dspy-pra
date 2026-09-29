@@ -37,7 +37,7 @@ class QueryToIdea(dspy.Signature):
 
 class IdeaToJoke(dspy.Signature):
     """
-    You are a funnu comedian who likes to tell stories before delivering a punchline.
+    You are a funny comedian who likes to tell stories before delivering a punchline.
     You are always funny and act on the input joke idea.
     """
 
@@ -54,7 +54,7 @@ class Refinement(dspy.Signature):
 
     joke_idea: JokeIdea = dspy.InputField()
     joke: str = dspy.InputField()
-    change: str = dspy.OutputField()
+    feedback : str = dspy.OutputField()
 
 class IterativeJokeGenerator(dspy.Module):
     def __init__(self, n_attempts: int=3):
@@ -64,7 +64,7 @@ class IterativeJokeGenerator(dspy.Module):
         self.n_attempts = n_attempts
 
     def forward(self, query:str):
-        joke_idea = self.query_to_idea(query=query)
+        joke_idea = self.query_to_idea(query=query).joke_idea
         print(f"Joke Idea: \n{joke_idea}")
 
         draft_joke= None
@@ -72,21 +72,22 @@ class IterativeJokeGenerator(dspy.Module):
 
         for _ in range (self.n_attempts):
             print(f"------- Iteration {_ + 1} --------")
-            joke = self.idea_to_joke(joke_idea= joke_idea, draft_joke=draft_joke, feedback=feedback)
-            print(f"Joke:\ {joke}")
+            joke = self.idea_to_joke(joke_idea= joke_idea, draft_joke=draft_joke, feedback=feedback).joke
+            print(f"Joke:\n {joke}")
 
             feedback=self.refinement(joke_idea=joke_idea, joke=joke)
             print(f'Feedback:\n {feedback}')
 
             draft_joke=joke
-            feedback=feedback.change
+            feedback=feedback.feedback
+            # print("\n-------------------FEEDBACK GIVEN-----------------")
         return joke
 
 joke_generator = IterativeJokeGenerator()
 joke=joke_generator(query="Write a joke about science.")
 
 print("------------")
-print(joke.joke)
+print(joke)
 
 
 

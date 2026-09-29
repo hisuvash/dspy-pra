@@ -2,6 +2,9 @@
 # In this process, LLM refines its output on itself, what we do it, once the output is generated, once again we pass
 # the generated output back to the llm, to reflect on the generated output and look for the possibilities of refinement
 
+## Generally llms are positive biased once they generate something, they always take it as good unless there is a comparison. For this reason
+## the outputs from this code will not actually be refined. For the comparison, refer to multioutput.py
+
 
 import os
 from dotenv import load_dotenv
@@ -52,7 +55,7 @@ class JokeJudge(dspy.Signature):
     joke_rating: int = dspy.OutputField(description= "Rating between 1 to 5", le=5, ge =1)
 
 class ConditionalJokeGenerator(dspy.Module):
-    def __init__(self, max_attempts: int=3, good_idea_threshold=4):
+    def __init__(self, max_attempts: int=5, good_idea_threshold=4):
         self.query_to_idea = dspy.Predict(QueryToIdea)
         self.idea_to_joke= dspy.Predict(IdeaToJoke)
         self.judge = dspy.ChainOfThought(JokeJudge)
@@ -62,8 +65,8 @@ class ConditionalJokeGenerator(dspy.Module):
     def forward(self, query:str):
         for _ in range (self.max_attempts):
             print(f"------- Iteration {_ + 1} --------")
-            joke_idea = self.query_to_idea(query=query)
-            print(f"Joke Idea:\ {joke_idea}")
+            joke_idea = self.query_to_idea(query=query).joke_idea
+            print(f"Joke Idea:\n {joke_idea}")
 
             judge_score = self.judge(joke_idea=joke_idea).joke_rating
 
@@ -73,14 +76,14 @@ class ConditionalJokeGenerator(dspy.Module):
                 print("Judge said it was awesome, skipping it")
                 break
 
-        joke = self.idea_to_joke(joke_idea=joke_idea)
+        joke = self.idea_to_joke(joke_idea=joke_idea).joke
         return joke
 
 joke_generator = ConditionalJokeGenerator()
 joke=joke_generator(query="Write a joke about science.")
 
 print("------------")
-print(joke.joke)
+print(joke)
 
 
 
