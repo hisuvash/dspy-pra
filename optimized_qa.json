@@ -1,0 +1,49 @@
+{
+  "generate.predict": {
+    "traces": [],
+    "train": [],
+    "demos": [
+      {
+        "question": "what is DSPy?",
+        "answer": "DSPy is a framework for programming language models."
+      },
+      {
+        "question": "what is Vector DB?",
+        "answer": "Vector databases store embeddings for similarity search."
+      },
+      {
+        "question": "what is Vector DB?",
+        "answer": "Vector databases store embeddings for similarity search."
+      },
+      {
+        "question": "what is Prompt Engineering?",
+        "answer": "Prompt engineering is the art of writing effective prompts."
+      }
+    ],
+    "signature": {
+      "instructions": "Answer the questions with short factual responses.",
+      "fields": [
+        {
+          "prefix": "Question:",
+          "description": "${question}"
+        },
+        {
+          "prefix": "Reasoning:",
+          "description": "${reasoning}"
+        },
+        {
+          "prefix": "Answer:",
+          "description": "${answer}"
+        }
+      ]
+    },
+    "lm": null
+  },
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.11",
+      "dspy": "3.3.1",
+      "cloudpickle": "3.1"
+    }
+  }
+}
